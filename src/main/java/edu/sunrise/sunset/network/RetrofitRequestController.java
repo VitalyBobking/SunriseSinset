@@ -45,7 +45,10 @@ public class RetrofitRequestController implements Callback<ApiSunriseAndSunset> 
 
         try{
             list.getStatus().equalsIgnoreCase("ok");
-            System.out.println("Sunset :" + list.getResults());
+            System.out.println("Sunrise :" + list.getResults().getSunrise());
+            System.out.println("Sunset :" + list.getResults().getSunset());
+            System.out.println("Sunrise :" + list.getResults().getSunrise()+ " / "
+                                + "Sunset : " +list.getResults().getSunset());
             log.info("Status : " + response.body().getStatus());
         } catch (Exception e) {
             e.printStackTrace();
