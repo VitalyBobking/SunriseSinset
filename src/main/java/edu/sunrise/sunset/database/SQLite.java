@@ -1,22 +1,58 @@
 package edu.sunrise.sunset.database;
 
+import edu.sunrise.sunset.model.CityLatLng;
 import org.apache.log4j.Logger;
 
 import java.sql.*;
-import java.util.Scanner;
 
 public class SQLite {
+
     private static final Logger log = Logger.getLogger(SQLite.class);
-    private static final String NAME_DB = "city.db";
+    public static final String NAME_DB = "city.db";
+    public static final String NAME_TABLE = "CITY";
     private  Statement statement;
     private  Connection connection;
 
-    public void showCity() {
+    public SQLite() {
+        createDataBase();
+    }
+
+    public void showNameCitiesAndId() {
+        ResultSet rs;
+        try {
+            rs = statement.executeQuery("SELECT ID, NAME_CITY FROM CITY");
+            while (rs.next()) {
+                System.out.println(rs.getString("NAME_CITY")
+                        + " : " + "ID = " + rs.getInt("ID"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            log.error("showNameCitiesAndId" + e.getMessage());
+        }
+    }
+
+    public double[] getLatLngByIdCity(int id) {
+        ResultSet rs;
+        CityLatLng city = new CityLatLng();
+        try {
+            rs = statement.executeQuery("SELECT LATITUDE, LONGITUDE FROM CITY WHERE id = " + id );
+            while (rs.next()) {
+                city.setLat(rs.getDouble("LATITUDE"));
+                city.setLnt(rs.getDouble("LONGITUDE"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            log.error("getLatLngByIdCity" + e.getMessage());
+        }
+
+        return new double[]{city.getLat(), city.getLnt()};
+    }
+
+    public void showCities() {
         ResultSet rs;
         try {
             rs = statement.executeQuery("SELECT * FROM CITY");
             while (rs.next()) {
-                // read the result set
                 System.out.println("ID = " + rs.getInt("ID"));
                 System.out.println("name = " + rs.getString("NAME_CITY"));
                 System.out.println("longitude = " + rs.getDouble("LONGITUDE"));
@@ -29,74 +65,49 @@ public class SQLite {
             }
         } catch (SQLException e1) {
             e1.printStackTrace();
-            log.error("error : " + e1.getMessage());
-        }
-
-        try {
-            if (connection != null)
-                connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            log.error("error : " + e.getMessage());
+            log.error("showCities error : " + e1.getMessage());
         }
     }
-    public void createDataBase(Scanner scanner) {
+
+    public void enterCity(String request) {
+        try {
+            statement.executeUpdate(request);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("enterCity error : " + e.getMessage());
+        }
+    }
+
+    private void createDataBase() {
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            log.error("error : " + e.getMessage());
+            log.error("createDataBase error : " + e.getMessage());
         }
 
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:"+ NAME_DB);
             statement = connection.createStatement();
-            statement.setQueryTimeout(30);  // set timeout to 30 sec.
-            statement.executeUpdate("CREATE TABLE CITY (ID INTEGER PRIMARY KEY, " +
-                    "NAME_CITY VARCHAR(30), " +
-                    "LONGITUDE DECIMAL(18.0), " +
-                    "LATITUDE DECIMAL(18.0))");
-
-            while(true) {
-                    System.out.println("Enter id city");
-                    String id = scanner.nextLine();
-
-                    System.out.println("Enter name City");
-                    String nameCity = scanner.nextLine();
-
-                    System.out.println("Enter longitude");
-                    String longitude = scanner.nextLine();
-
-                    System.out.println("Enter latitude");
-                    String latitude = scanner.nextLine();
-
-                    System.out.println();
-                    System.out.println("Do you wish to continue? (Yes/No) ");
-                    String answer = scanner.nextLine();
-
-                    if(!(answer.equalsIgnoreCase("Yes") || (answer.equalsIgnoreCase("No")))){
-                        System.out.println("Invalid option.");
-                        System.out.println();
-                        System.out.println("Enter valid option: (Yes/No)");
-                        answer = scanner.next();
-                    }
-                    if(answer.equalsIgnoreCase("Yes")){
-                        String sql = "INSERT INTO CITY VALUES('" + id + "','" + nameCity + "','" + longitude + "','" + latitude + "')";
-                        statement.executeUpdate(sql);
-                        continue;
-                    }
-                    if(answer.equalsIgnoreCase("No")){
-                        System.out.println("Thanks, that is all. ");
-                        String sql = "INSERT INTO CITY VALUES('" + id + "','" + nameCity + "','" + longitude + "','" + latitude + "')";
-                        statement.executeUpdate(sql);
-                        break;
-                    }
-
-            }
+            statement.setQueryTimeout(30);
+            statement.executeUpdate("CREATE TABLE IF NOT EXISTS "+NAME_TABLE+" (" +
+                                                 "id INTEGER PRIMARY KEY, " +
+                                                 "NAME_CITY VARCHAR(30), " +
+                                                 "LATITUDE DECIMAL(18.0), " +
+                                                 "LONGITUDE DECIMAL(18.0))");
 
         } catch (SQLException e) {
             e.printStackTrace();
-            log.error("error : " + e.getMessage());
+            log.error("createDataBase error : " + e.getMessage());
+        }
+    }
+    public void closeDatabase() {
+        try {
+            if (connection != null)
+                connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            log.error("getLatLngByIdCity error : " + e.getMessage());
         }
     }
 }

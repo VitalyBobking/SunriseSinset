@@ -28,6 +28,14 @@ public class ApiSunriseAndSunset {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "ApiSunriseAndSunset{" +
+                "results=" + results +
+                ", status='" + status + '\'' +
+                '}';
+    }
 }
 
 

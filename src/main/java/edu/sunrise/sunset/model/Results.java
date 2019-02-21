@@ -117,4 +117,19 @@ public class Results {
         this.astronomicalTwilightEnd = astronomicalTwilightEnd;
     }
 
+    @Override
+    public String toString() {
+        return "Results{" +
+                "sunrise='" + sunrise + '\'' +
+                ", sunset='" + sunset + '\'' +
+                ", solarNoon='" + solarNoon + '\'' +
+                ", dayLength='" + dayLength + '\'' +
+                ", civilTwilightBegin='" + civilTwilightBegin + '\'' +
+                ", civilTwilightEnd='" + civilTwilightEnd + '\'' +
+                ", nauticalTwilightBegin='" + nauticalTwilightBegin + '\'' +
+                ", nauticalTwilightEnd='" + nauticalTwilightEnd + '\'' +
+                ", astronomicalTwilightBegin='" + astronomicalTwilightBegin + '\'' +
+                ", astronomicalTwilightEnd='" + astronomicalTwilightEnd + '\'' +
+                '}';
+    }
 }
